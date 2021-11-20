@@ -30,7 +30,7 @@ func ErrorHandler(c *gin.Context, recovered interface{})  {
 }
 
 func ValidationErrors(c *gin.Context, err error)  {
-	response := helper.APIResponse("BAD REQUEST", http.StatusBadRequest, "failed", err.Error())
+	response := helper.APIResponse("BAD REQUEST", http.StatusBadRequest, "failed", err.Error(), helper.Pagination{})
 	c.JSON(http.StatusBadRequest, response)
 	return
 }

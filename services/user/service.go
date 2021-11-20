@@ -12,6 +12,7 @@ type Service interface {
 	Delete(ID int)
 	FindById(ID int) User
 	FindAll() []User
+	FindAllWithPagination(page int, pageSize int) ([]User, helper.Pagination)
 }
 
 type service struct {
@@ -59,5 +60,9 @@ func (service *service) FindById(ID int) User {
 
 func (service *service) FindAll() []User {
 	return service.repository.FindAll()
+}
+
+func (service *service) FindAllWithPagination(page int, pageSize int) ([]User, helper.Pagination) {
+	return service.repository.FindAllWithPagination(page, pageSize)
 }
 

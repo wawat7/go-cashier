@@ -25,8 +25,21 @@ func (controller *UserController) Route(app *gin.Engine) {
 }
 
 func (controller *UserController) List(c *gin.Context) {
-	users := controller.service.FindAll()
-	c.JSON(http.StatusOK, helper.APIResponse("List Users", http.StatusOK, "success", UsersFormat(users)))
+	page, _ := strconv.Atoi(c.Query("page"))
+
+	if page == 0 {
+		page = 1
+	}
+
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
+	users, pagination := controller.service.FindAllWithPagination(page, pageSize)
+	c.JSON(http.StatusOK, helper.APIResponse("List Users", http.StatusOK, "success", UsersFormat(users), pagination))
 	return
 }
 
@@ -37,14 +50,14 @@ func (controller *UserController) Create(c *gin.Context) {
 
 	user := User{}
 	user = controller.service.Create(input, user)
-	c.JSON(http.StatusOK, helper.APIResponse("Success created user", http.StatusOK, "success", UserFormat(user)))
+	c.JSON(http.StatusOK, helper.APIResponse("Success created user", http.StatusOK, "success", UserFormat(user), helper.Pagination{}))
 	return
 }
 
 func (controller *UserController) GetUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Params.ByName("id"))
 	user := controller.service.FindById(id)
-	c.JSON(http.StatusOK, helper.APIResponse("Get User", http.StatusOK, "success", UserFormat(user)))
+	c.JSON(http.StatusOK, helper.APIResponse("Get User", http.StatusOK, "success", UserFormat(user), helper.Pagination{}))
 	return
 }
 
@@ -59,13 +72,13 @@ func (controller *UserController) Update(c *gin.Context) {
 	user.PhoneNumber = input.PhoneNumber
 	user.Address = input.Address
 	user = controller.service.Update(user)
-	c.JSON(http.StatusOK, helper.APIResponse("Success update user", http.StatusOK, "success", UserFormat(user)))
+	c.JSON(http.StatusOK, helper.APIResponse("Success update user", http.StatusOK, "success", UserFormat(user), helper.Pagination{}))
 	return
 }
 
 func (controller *UserController) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Params.ByName("id"))
 	controller.service.Delete(id)
-	c.JSON(http.StatusOK, helper.APIResponse("Success delete user", http.StatusOK, "success", nil))
+	c.JSON(http.StatusOK, helper.APIResponse("Success delete user", http.StatusOK, "success", nil, helper.Pagination{}))
 	return
 }

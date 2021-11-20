@@ -20,11 +20,12 @@ type Response struct {
 	Meta Meta `json:"meta"`
 }
 
-func APIResponse(message string, code int, status string, data interface{}) Response {
+func APIResponse(message string, code int, status string, data interface{}, pagination Pagination) Response {
 	meta := Meta{
 		Message: message,
 		Code:    code,
 		Status:  status,
+		Pagination: pagination,
 	}
 
 	jsonResponse := Response{
